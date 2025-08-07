@@ -1,9 +1,27 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Provider } from 'react-redux'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import Header from './components/Header'
+import Footer from './components/Footer'
+import AppRoutes from './routes/AppRoutes'
+import { store } from './store/store'
+import { setNavigator } from './utils/navigator'
 
 export default function App() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setNavigator(navigate);
+  }, [navigate]);
+
   return (
-    <div className='bg-brand-primary text-content-primary'>
-      <h1>Crave it food ordering system</h1>
-    </div>
+    <Provider store={store}>
+      <Header />
+      <AppRoutes />
+      <ToastContainer theme="colored" />
+      <Footer />
+    </Provider>
   )
 }
