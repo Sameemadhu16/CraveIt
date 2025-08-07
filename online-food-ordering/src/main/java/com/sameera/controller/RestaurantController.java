@@ -26,6 +26,8 @@ public class RestaurantController {
             @RequestHeader("Authorization") String jwt,
             @RequestParam String keyword
     ) throws Exception {
+
+//        userService.findUserByJwtToken(jwt)
         User user = userService.findUserByJwtToken(jwt);
 
         List<Restaurant> restaurant = restaurantService.searchRestaurant(keyword);
