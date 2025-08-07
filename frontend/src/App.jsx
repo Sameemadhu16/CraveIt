@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import Header from './components/Header'
-import Footer from './components/Footer'
 import AppRoutes from './routes/AppRoutes'
 import { store } from './store/store'
 import { setNavigator } from './utils/navigator'
+import Header from './components/home/Header'
+import Footer from './components/home/Footer'
 
 export default function App() {
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      <Header />
+      <Header/>
       <AppRoutes />
       <ToastContainer theme="colored" />
       <Footer />
