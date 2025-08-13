@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { MapPin, Menu, X, ChevronDown, Search, User, LogIn } from 'lucide-react'
+import { MapPin, Menu, X, ChevronDown, Search, User, LogIn, LogOut } from 'lucide-react'
 import logo from '../../assets/home/logo.svg'
 import locations from '../../list/location.js'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
+import { toast } from 'react-toastify'
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -12,6 +14,7 @@ export default function Header() {
   const locationRef = useRef(null)
 
   const navigate = useNavigate()
+  const { currentUser, logout } = useAuth()
 
   const hadleLoginClick = () => {
     navigate('/login')
@@ -19,6 +22,16 @@ export default function Header() {
 
   const handleSignUpClick = () => {
     navigate('/sign-up')
+  }
+
+  const handleLogout = async () => {
+    try {
+      await logout()
+      toast.success('Logged out successfully!')
+      navigate('/')
+    } catch (error) {
+      toast.error('Failed to log out')
+    }
   }
 
   // Filter locations based on search term
@@ -126,18 +139,37 @@ export default function Header() {
             />
           </div>
 
-          {/* Right side - Login and Sign up */}
+          {/* Right side - Login and Sign up / User Menu */}
           <div className="flex items-center space-x-2 absolute right-2 sm:right-4 lg:right-6">
-            <button onClick={hadleLoginClick} 
-            className="hidden sm:flex items-center space-x-2 px-3 py-2 text-brand-primary font-medium border border-brand-primary rounded-lg hover:bg-brand-primary hover:text-white transition-colors">
-              <LogIn className="w-4 h-4" />
-              <span>Login</span>
-            </button>
-            <button onClick={handleSignUpClick} 
-            className="hidden sm:flex items-center space-x-2 px-3 py-2 bg-brand-primary text-white font-medium rounded-lg hover:bg-orange-500 transition-colors">
-              <User className="w-4 h-4" />
-              <span>Sign up</span>
-            </button>
+            {currentUser ? (
+              // Show user info and logout when authenticated
+              <>
+                <span className="hidden sm:block text-sm text-gray-700">
+                  Welcome, {currentUser.displayName || currentUser.email}
+                </span>
+                <button 
+                  onClick={handleLogout}
+                  className="hidden sm:flex items-center space-x-2 px-3 py-2 text-red-600 font-medium border border-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Logout</span>
+                </button>
+              </>
+            ) : (
+              // Show login/signup when not authenticated
+              <>
+                <button onClick={hadleLoginClick} 
+                className="hidden sm:flex items-center space-x-2 px-3 py-2 text-brand-primary font-medium border border-brand-primary rounded-lg hover:bg-brand-primary hover:text-white transition-colors">
+                  <LogIn className="w-4 h-4" />
+                  <span>Login</span>
+                </button>
+                <button onClick={handleSignUpClick} 
+                className="hidden sm:flex items-center space-x-2 px-3 py-2 bg-brand-primary text-white font-medium rounded-lg hover:bg-orange-500 transition-colors">
+                  <User className="w-4 h-4" />
+                  <span>Sign up</span>
+                </button>
+              </>
+            )}
           </div>
         </div>
 
@@ -202,14 +234,39 @@ export default function Header() {
               
               {/* Mobile auth buttons */}
               <div className="flex flex-col space-y-2 sm:hidden">
-                <button className="w-full flex items-center justify-center space-x-2 px-4 py-2 text-brand-primary font-medium border border-brand-primary rounded-lg hover:bg-brand-primary hover:text-white transition-colors">
-                  <LogIn className="w-4 h-4" />
-                  <span>Login</span>
-                </button>
-                <button className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-brand-primary text-white font-medium rounded-lg hover:bg-orange-500 transition-colors">
-                  <User className="w-4 h-4" />
-                  <span>Sign up</span>
-                </button>
+                {currentUser ? (
+                  // Mobile logout when authenticated
+                  <>
+                    <div className="text-center text-sm text-gray-700 py-2">
+                      Welcome, {currentUser.displayName || currentUser.email}
+                    </div>
+                    <button 
+                      onClick={handleLogout}
+                      className="w-full flex items-center justify-center space-x-2 px-4 py-2 text-red-600 font-medium border border-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Logout</span>
+                    </button>
+                  </>
+                ) : (
+                  // Mobile login/signup when not authenticated
+                  <>
+                    <button 
+                      onClick={hadleLoginClick}
+                      className="w-full flex items-center justify-center space-x-2 px-4 py-2 text-brand-primary font-medium border border-brand-primary rounded-lg hover:bg-brand-primary hover:text-white transition-colors"
+                    >
+                      <LogIn className="w-4 h-4" />
+                      <span>Login</span>
+                    </button>
+                    <button 
+                      onClick={handleSignUpClick}
+                      className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-brand-primary text-white font-medium rounded-lg hover:bg-orange-500 transition-colors"
+                    >
+                      <User className="w-4 h-4" />
+                      <span>Sign up</span>
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>

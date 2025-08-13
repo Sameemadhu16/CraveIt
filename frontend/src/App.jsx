@@ -6,6 +6,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import AppRoutes from './routes/AppRoutes'
 import { store } from './store/store'
 import { setNavigator } from './utils/navigator'
+import { AuthProvider } from './context/AuthContext'
 import Header from './components/home/Header'
 import Footer from './components/home/Footer'
 
@@ -18,10 +19,12 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      <Header/>
-      <AppRoutes />
-      <ToastContainer theme="colored" />
-      <Footer />
+      <AuthProvider>
+        <Header/>
+        <AppRoutes />
+        <ToastContainer theme="colored" />
+        <Footer />
+      </AuthProvider>
     </Provider>
   )
 }
