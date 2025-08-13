@@ -25,14 +25,14 @@ const HeroSection = () => {
           </div>
           
           {/* Search bar */}
-          <div className="bg-white rounded-full p-2 w-full max-w-3xl shadow-2xl">
+          <div className="bg-white rounded-full w-full max-w-2xl shadow-2xl">
             <div className="flex items-center">
               <input
                 type="text"
                 placeholder="Search for dishes or restaurants..."
-                className="flex-1 px-8 py-5 text-content-primary placeholder-gray-500 focus:outline-none text-lg bg-transparent"
+                className="flex-1 px-8 py-5 text-content-primary placeholder-content-secondary focus:outline-none text-lg font-fontFamily-primary bg-transparent"
               />
-              <button className="bg-green-500 hover:bg-green-600 text-white p-5 rounded-full font-medium transition-colors shrink-0">
+              <button className="bg-green-500 hover:bg-green-600 text-white p-3 mr-2 rounded-full font-small transition-colors shrink-0">
                 <Search className="w-6 h-6" />
               </button>
             </div>

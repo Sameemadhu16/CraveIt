@@ -1,27 +1,35 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { MapPin, Menu, X, ChevronDown } from 'lucide-react'
-import logo from '../../assets/home/logo.png'
+import { MapPin, Menu, X, ChevronDown, Search, User, LogIn } from 'lucide-react'
+import logo from '../../assets/home/logo.svg'
+import locations from '../../list/location.js'
+import { useNavigate } from 'react-router-dom'
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isLocationOpen, setIsLocationOpen] = useState(false)
-  const [selectedLocation, setSelectedLocation] = useState('UCSC Building Complex,35')
+  const [selectedLocation, setSelectedLocation] = useState('Select Location')
+  const [searchTerm, setSearchTerm] = useState('')
   const locationRef = useRef(null)
-  
-  const locations = [
-    'UCSC Building Complex,35',
-    'Colombo Central Station',
-    'Galle Road, Bambalapitiya',
-    'Independence Square',
-    'Kandy City Center',
-    'Negombo Beach Road',
-    'Mount Lavinia Hotel Area',
-    'Rajagiriya Junction'
-  ]
+
+  const navigate = useNavigate()
+
+  const hadleLoginClick = () => {
+    navigate('/login')
+  }
+
+  const handleSignUpClick = () => {
+    navigate('/sign-up')
+  }
+
+  // Filter locations based on search term
+  const filteredLocations = locations.filter(location =>
+    location.toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
   const handleLocationSelect = (location) => {
     setSelectedLocation(location)
     setIsLocationOpen(false)
+    setSearchTerm('')
   }
 
   // Close dropdown when clicking outside
@@ -40,10 +48,10 @@ export default function Header() {
 
   return (
     <header className="bg-white shadow-sm border-b border-border-light sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+      <div className="max-w-full mx-auto pl-2 sm:pl-4 lg:pl-6 pr-0">
+        <div className="flex justify-between items-center h-16 relative">
           {/* Left side - Menu and Location */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 absolute left-2 sm:left-4 lg:left-6">
             {/* Hamburger Menu */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -53,7 +61,7 @@ export default function Header() {
             </button>
 
             {/* Location Selector */}
-            <div className="hidden sm:flex items-center relative" ref={locationRef}>
+            <div className="hidden sm:flex items-center relative ml-4" ref={locationRef}>
               <button 
                 onClick={() => setIsLocationOpen(!isLocationOpen)}
                 className="flex items-center space-x-2 text-content-secondary cursor-pointer hover:text-brand-primary transition-colors"
@@ -65,22 +73,44 @@ export default function Header() {
               
               {/* Location Dropdown */}
               {isLocationOpen && (
-                <div className="absolute top-full left-0 mt-2 w-72 bg-white border border-border-light rounded-lg shadow-lg z-50">
-                  <div className="py-2">
-                    {locations.map((location, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleLocationSelect(location)}
-                        className={`w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors ${
-                          selectedLocation === location ? 'bg-brand-secondary text-brand-primary' : 'text-content-primary'
-                        }`}
-                      >
-                        <div className="flex items-center space-x-2">
-                          <MapPin className="w-4 h-4 text-brand-primary" />
-                          <span className="text-sm">{location}</span>
-                        </div>
-                      </button>
-                    ))}
+                <div className="absolute top-full left-0 mt-2 w-80 bg-white border border-border-light rounded-lg shadow-lg z-50">
+                  {/* Search input */}
+                  <div className="p-3 border-b border-border-light">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-content-tertiary w-4 h-4" />
+                      <input
+                        type="text"
+                        placeholder="Search for your location..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 border border-border-light rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent text-sm"
+                        autoFocus
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Location list */}
+                  <div className="py-2 max-h-64 overflow-y-auto">
+                    {filteredLocations.length > 0 ? (
+                      filteredLocations.map((location, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleLocationSelect(location)}
+                          className={`w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors ${
+                            selectedLocation === location ? 'bg-brand-secondary text-brand-primary' : 'text-content-primary'
+                          }`}
+                        >
+                          <div className="flex items-center space-x-2">
+                            <MapPin className="w-4 h-4 text-brand-primary" />
+                            <span className="text-sm">{location}</span>
+                          </div>
+                        </button>
+                      ))
+                    ) : (
+                      <div className="px-4 py-2 text-sm text-content-tertiary">
+                        No locations found
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -88,21 +118,25 @@ export default function Header() {
           </div>
 
           {/* Center - Logo */}
-          <div className="flex items-center">
+          <div className="flex items-center absolute left-1/2 transform -translate-x-1/2">
             <img 
               src={logo} 
               alt="CraveIt Logo" 
-              className="h-16 w-36"
+              className="h-32 w-64"
             />
           </div>
 
           {/* Right side - Login and Sign up */}
-          <div className="flex items-center space-x-3">
-            <button className="hidden sm:block px-4 py-2 text-brand-primary font-medium border border-brand-primary rounded-lg hover:bg-brand-primary hover:text-white transition-colors">
-              Login
+          <div className="flex items-center space-x-2 absolute right-2 sm:right-4 lg:right-6">
+            <button onClick={hadleLoginClick} 
+            className="hidden sm:flex items-center space-x-2 px-3 py-2 text-brand-primary font-medium border border-brand-primary rounded-lg hover:bg-brand-primary hover:text-white transition-colors">
+              <LogIn className="w-4 h-4" />
+              <span>Login</span>
             </button>
-            <button className="hidden sm:block px-4 py-2 bg-brand-primary text-white font-medium rounded-lg hover:bg-orange-500 transition-colors">
-              Sign up
+            <button onClick={handleSignUpClick} 
+            className="hidden sm:flex items-center space-x-2 px-3 py-2 bg-brand-primary text-white font-medium rounded-lg hover:bg-orange-500 transition-colors">
+              <User className="w-4 h-4" />
+              <span>Sign up</span>
             </button>
           </div>
         </div>
@@ -125,21 +159,42 @@ export default function Header() {
                 {/* Mobile Location Dropdown */}
                 {isLocationOpen && (
                   <div className="mt-2 bg-gray-50 rounded-lg">
-                    <div className="py-2">
-                      {locations.map((location, index) => (
-                        <button
-                          key={index}
-                          onClick={() => handleLocationSelect(location)}
-                          className={`w-full text-left px-4 py-2 hover:bg-white transition-colors ${
-                            selectedLocation === location ? 'bg-brand-secondary text-brand-primary' : 'text-content-primary'
-                          }`}
-                        >
-                          <div className="flex items-center space-x-2">
-                            <MapPin className="w-4 h-4 text-brand-primary" />
-                            <span className="text-sm">{location}</span>
-                          </div>
-                        </button>
-                      ))}
+                    {/* Mobile Search input */}
+                    <div className="p-3 border-b border-gray-200">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-content-tertiary w-4 h-4" />
+                        <input
+                          type="text"
+                          placeholder="Search for your location..."
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                          className="w-full pl-10 pr-4 py-2 border border-border-light rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent text-sm bg-white"
+                        />
+                      </div>
+                    </div>
+                    
+                    {/* Mobile Location list */}
+                    <div className="py-2 max-h-48 overflow-y-auto">
+                      {filteredLocations.length > 0 ? (
+                        filteredLocations.map((location, index) => (
+                          <button
+                            key={index}
+                            onClick={() => handleLocationSelect(location)}
+                            className={`w-full text-left px-4 py-2 hover:bg-white transition-colors ${
+                              selectedLocation === location ? 'bg-brand-secondary text-brand-primary' : 'text-content-primary'
+                            }`}
+                          >
+                            <div className="flex items-center space-x-2">
+                              <MapPin className="w-4 h-4 text-brand-primary" />
+                              <span className="text-sm">{location}</span>
+                            </div>
+                          </button>
+                        ))
+                      ) : (
+                        <div className="px-4 py-2 text-sm text-content-tertiary">
+                          No locations found
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -147,11 +202,13 @@ export default function Header() {
               
               {/* Mobile auth buttons */}
               <div className="flex flex-col space-y-2 sm:hidden">
-                <button className="w-full px-4 py-2 text-brand-primary font-medium border border-brand-primary rounded-lg hover:bg-brand-primary hover:text-white transition-colors">
-                  Login
+                <button className="w-full flex items-center justify-center space-x-2 px-4 py-2 text-brand-primary font-medium border border-brand-primary rounded-lg hover:bg-brand-primary hover:text-white transition-colors">
+                  <LogIn className="w-4 h-4" />
+                  <span>Login</span>
                 </button>
-                <button className="w-full px-4 py-2 bg-brand-primary text-white font-medium rounded-lg hover:bg-orange-500 transition-colors">
-                  Sign up
+                <button className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-brand-primary text-white font-medium rounded-lg hover:bg-orange-500 transition-colors">
+                  <User className="w-4 h-4" />
+                  <span>Sign up</span>
                 </button>
               </div>
             </div>
